@@ -1,0 +1,81 @@
+import requests
+from bs4 import BeautifulSoup   #bs4--> file of beautifulSoup
+def spider(pageurl):
+    url=pageurl
+    data=requests.get(url)
+    try:
+          #stores page in data variable
+        if data.status_code==200:  #200-->success
+            print("Page Downloaded")
+    except Exception as e:
+        print(e)
+    soup=BeautifulSoup(data.text,'lxml')  #lxml tells beautiful soup that it is html data.
+spider('https://www.ndtv.com/news')
+import pandas as pd
+section=soup.find_all('div',{'class':'hmpage_lhs'})
+links=set()
+info=[]
+for item in section:
+    link=item.find_all('a')
+    for i in link:
+        title=i.text
+        #print(title)
+        href=i.get('href')
+        #print(href)
+        links.add(href)
+        if title!='':
+            if link!='':
+                if link!='javascript:void(0);':
+                    info.append({'Article Title': title,
+                            'Article Link': href})
+section=soup.find_all('div',{'class':'row fourcolu'})
+for item in section:
+    link=item.find_all('a')
+    for i in link:
+        title=i.text
+        #print(title)
+        href=i.get('href')
+        #print(href)  
+        links.add(href)
+        if title!='':
+            if link!='':
+                if link!='javascript:void(0);':
+                    info.append({'Article Title': title,
+                            'Article Link': href})
+section=soup.find_all('div',{'class':'row'})
+for item in section:
+    link=item.find_all('a')
+    for i in link:
+        title=i.text
+        #print(title)
+        href=i.get('href')
+        #print(href) 
+        links.add(href)
+        if title!='':
+            if link!='':
+                if link!='javascript:void(0);':
+                    info.append({'Article Title': title,
+                            'Article Link': href})
+links.discard('')
+links.discard('javascript:void(0);')
+len(links)
+info
+df=pd.DataFrame(info)
+df.to_csv('info.csv')    
+
+#for i in links:
+#    spider(i)
+#    section=soup.find_all('div',{'class':'sp-cn ins_storybody'})
+#    for item in section:
+#        link=item.find_all('a')
+#        for i in link:
+#            href=i.get('href')
+#            links.add(href)
+            
+#links.discard('')  
+#links.discard('javascript:void(0);')
+#len(links)    
+
+    #more=links.find('article',{'class':'col-650 ml-auto'})
+    #for item in more:
+        #item.find_all('a')
